@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./app.css";
+import "./globals.css";
 import { AmplifyProvider } from "./amplify-provider";
 import Header from "./components/Header";
 

@@ -1,83 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthenticator } from "@aws-amplify/ui-react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-import "./../app/app.css";
 
-const client = generateClient<Schema>();
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 
-export default function App() {
+export default function HomePage() {
   const router = useRouter();
-  const { authStatus } = useAuthenticator((context) => [context.authStatus]);
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-  const [newTodo, setNewTodo] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  function listTodos() {
-    const sub = client.models.Todo.observeQuery().subscribe({
-      next: (data) => {
-        setTodos([...data.items]);
-        setIsLoading(false);
-      },
-    });
-    return () => sub.unsubscribe();
-  }
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (authStatus === "authenticated") {
-      const unsubscribe = listTodos();
-      return unsubscribe;
-    }
-    if (authStatus === "unauthenticated") {
-      router.replace("/login");
-    }
-  }, [authStatus]);
+    setMounted(true);
+  }, []);
 
-  function createTodo() {
-    const content = newTodo.trim();
-    if (!content) return;
-    client.models.Todo.create({ content });
-    setNewTodo("");
-  }
+  const { authStatus } = useAuthenticator();
+
+  useEffect(() => {
+    if (mounted) {
+      if (authStatus === "authenticated") {
+        router.replace("/dashboard");
+      } else if (authStatus === "unauthenticated") {
+        router.replace("/login");
+      }
+    }
+  }, [authStatus, router, mounted]);
 
   return (
-    <main>
-      {authStatus !== "authenticated" ? null : (
-        <>
-          <div className="todo-header">
-            <h1>My todos</h1>
-            <span className="muted">{todos.length} total</span>
-          </div>
-          <div className="todo-form">
-            <input
-              className="input"
-              placeholder="Add a new todo..."
-              value={newTodo}
-              onChange={(e) => setNewTodo(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") createTodo();
-              }}
-            />
-            <button className="btn btn-primary" onClick={createTodo}>
-              + Add
-            </button>
-          </div>
-          {isLoading ? (
-            <p className="muted">Loading todos…</p>
-          ) : todos.length === 0 ? (
-            <p className="muted">No todos yet. Add your first one above.</p>
-          ) : (
-            <ul>
-              {todos.map((todo) => (
-                <li key={todo.id}>{todo.content}</li>
-              ))}
-            </ul>
-          )}
-        </>
-      )}
+    <main className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
     </main>
   );
 }

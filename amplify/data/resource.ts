@@ -1,4 +1,6 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import { qrGenerateFn } from "../functions/qrGenerateFn/resource";
+import { qrTrackFn } from "../functions/qrTrackFn/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -12,6 +14,44 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+
+  // QR code models
+  QrItems: a
+    .model({
+      id: a.id().required(),
+      targetUrl: a.string().required(),
+      s3Key: a.string().required(),
+      ownerSub: a.string(),
+      createdAt: a.datetime().required(),
+      lastScanAt: a.datetime(),
+      scanCount: a.integer().default(0),
+    })
+    .authorization((allow) => [allow.publicApiKey(), allow.owner()]),
+
+  QrScans: a
+    .model({
+      qrId: a.string().required(),
+      scanAt: a.datetime().required(),
+      ua: a.string(),
+      referer: a.string(),
+      ip: a.string(),
+      country: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()])
+    .secondaryIndexes((index) => [
+      index("qrId").sortKeys(["scanAt"]).name("byQrId"),
+    ]),
+
+  // Custom queries for QR functions
+  generateQr: a
+    .query()
+    .arguments({
+      targetUrl: a.string().required(),
+      label: a.string(),
+    })
+    .returns(a.json())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(qrGenerateFn)),
 });
 
 export type Schema = ClientSchema<typeof schema>;
