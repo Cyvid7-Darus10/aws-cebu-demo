@@ -2,7 +2,7 @@ import type { Schema } from "../../data/resource";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import * as QRCode from "qrcode";
+import QRCode from "qrcode";
 import { ulid } from "ulid";
 
 // Initialize AWS clients

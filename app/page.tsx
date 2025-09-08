@@ -28,10 +28,15 @@ export default function HomePage() {
   }, [authStatus, router, mounted]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading...</p>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="text-center animate-in fade-in duration-500">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-in zoom-in duration-600">
+          <span className="text-white font-bold text-xl">P</span>
+        </div>
+        <div className="w-8 h-8 mx-auto mb-4 animate-spin rounded-full border-2 border-gray-200 border-t-blue-600"></div>
+        <p className="text-gray-600 font-medium">
+          Preparing your experience...
+        </p>
       </div>
     </main>
   );
