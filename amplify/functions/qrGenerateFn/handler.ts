@@ -96,7 +96,9 @@ export const handler: Schema["generateQr"]["functionHandler"] = async (
             targetUrl: normalizedUrl,
             s3Key,
             ownerSub:
-              "identity" in event.identity && "sub" in event.identity
+              event.identity &&
+              "identity" in event.identity &&
+              "sub" in event.identity
                 ? event.identity.sub
                 : null,
             createdAt: now,

@@ -1,4 +1,4 @@
-import type { Handler } from "aws-lambda";
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
@@ -10,19 +10,9 @@ import {
 // Initialize AWS clients
 const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
-interface TrackingEvent {
-  pathParameters?: {
-    id?: string;
-  };
-  headers?: Record<string, string>;
-  requestContext?: {
-    identity?: {
-      sourceIp?: string;
-    };
-  };
-}
-
-export const handler: Handler<TrackingEvent> = async (event) => {
+export const handler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
   try {
     const { id } = event.pathParameters || {};
 
