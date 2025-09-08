@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
+import { Logo, Card } from "../components/atoms";
+import { FeatureCard } from "../components/molecules";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -16,9 +18,7 @@ export default function LoginPage() {
         {/* Hero Section */}
         <div className="text-center mb-8 animate-in fade-in duration-500">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg animate-in zoom-in duration-600">
-              <span className="text-white font-bold text-2xl">P</span>
-            </div>
+            <Logo size="lg" className="animate-in zoom-in duration-600" />
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Welcome to Pastelero
@@ -87,7 +87,10 @@ export default function LoginPage() {
         </div>
 
         {/* Auth Form */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-8 animate-in slide-in-from-bottom duration-500 delay-300">
+        <Card
+          variant="elevated"
+          className="bg-white/80 backdrop-blur-sm animate-in slide-in-from-bottom duration-500 delay-300"
+        >
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
               Sign in to your account
@@ -105,7 +108,7 @@ export default function LoginPage() {
               return <div />;
             }}
           </Authenticator>
-        </div>
+        </Card>
 
         {/* Footer */}
         <div className="text-center mt-8 animate-in fade-in duration-500 delay-500">
