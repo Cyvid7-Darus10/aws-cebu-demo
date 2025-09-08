@@ -67,7 +67,7 @@ export default function Dashboard() {
   };
 
   if (!mounted || authStatus !== "authenticated") {
-    return <LoadingState message="Loading your dashboard..." showLogo />;
+    return <LoadingState message="Loading dashboard..." showLogo />;
   }
 
   return (
@@ -81,12 +81,11 @@ export default function Dashboard() {
             className="animate-in zoom-in duration-600"
           />
         </div>
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
           QR Code Generator
         </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Create beautiful, trackable QR codes that provide insights into your
-          audience
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          Create trackable QR codes with detailed analytics
         </p>
       </div>
 

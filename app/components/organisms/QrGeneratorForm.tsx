@@ -63,7 +63,7 @@ const QrGeneratorForm: React.FC<QrGeneratorFormProps> = ({
   return (
     <Card className="animate-in slide-in-from-bottom duration-500 delay-300">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+        <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
           <svg
             className="w-5 h-5 text-white"
             fill="none"

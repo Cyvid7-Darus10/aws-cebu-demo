@@ -19,7 +19,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, size = "md", className }) => {
   return (
     <div
       className={cn(
-        "bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-medium",
+        "bg-gray-700 rounded-full flex items-center justify-center text-white font-medium",
         sizes[size],
         className
       )}

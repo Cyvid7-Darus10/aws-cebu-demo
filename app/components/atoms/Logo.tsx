@@ -33,7 +33,7 @@ const Logo: React.FC<LogoProps> = ({
   const iconContent = (
     <div
       className={cn(
-        "bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center",
+        "bg-gray-900 rounded-lg flex items-center justify-center",
         sizes[size].icon,
         animated && "group-hover:scale-105 transition-transform"
       )}
@@ -43,12 +43,7 @@ const Logo: React.FC<LogoProps> = ({
   );
 
   const textContent = showText && (
-    <span
-      className={cn(
-        "font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent",
-        sizes[size].text
-      )}
-    >
+    <span className={cn("font-bold text-gray-900", sizes[size].text)}>
       Pastelero
     </span>
   );

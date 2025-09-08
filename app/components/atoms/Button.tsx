@@ -29,13 +29,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none rounded-lg";
 
     const variants = {
-      primary:
-        "text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl focus:ring-blue-500",
+      primary: "text-white bg-gray-900 hover:bg-gray-800 focus:ring-gray-900",
       secondary:
-        "text-gray-900 bg-white border border-gray-300 shadow-sm hover:bg-gray-50 hover:shadow focus:ring-gray-500",
+        "text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 focus:ring-gray-500",
       ghost: "text-gray-700 hover:text-gray-900 hover:bg-gray-100",
-      danger:
-        "text-white bg-red-600 hover:bg-red-700 shadow-lg hover:shadow-xl focus:ring-red-500",
+      danger: "text-white bg-red-600 hover:bg-red-700 focus:ring-red-500",
     };
 
     const sizes = {

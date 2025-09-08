@@ -11,11 +11,11 @@ const LoadingState: React.FC<LoadingStateProps> = ({
   showLogo = false,
 }) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="text-center animate-in fade-in duration-500">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
         {showLogo && (
-          <div className="mb-4 animate-in zoom-in duration-600">
-            <Logo size="lg" showText={false} />
+          <div className="mb-6">
+            <Logo size="md" showText={false} />
           </div>
         )}
         <Spinner size="lg" className="mx-auto mb-4" />
