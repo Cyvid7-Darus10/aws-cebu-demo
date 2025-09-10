@@ -7,6 +7,7 @@ import { Logo } from "../components/atoms";
 import { FeatureCard, LoadingState } from "../components/molecules";
 import { QrGeneratorForm, QrResultDisplay } from "../components/organisms";
 import type { QrResult } from "../components/organisms";
+import { useQrGeneration } from "../hooks/useQrGeneration";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -15,9 +16,8 @@ export default function Dashboard() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const { authStatus } = useAuthenticator();
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [qrResult, setQrResult] = useState<QrResult | null>(null);
-  const [error, setError] = useState("");
+  const { generateQr, isGenerating, qrResult, error, clearResult } =
+    useQrGeneration();
 
   useEffect(() => {
     setMounted(true);
@@ -29,34 +29,6 @@ export default function Dashboard() {
       router.replace("/login");
     }
   }, [mounted, authStatus, router]);
-
-  const generateQr = async (data: { targetUrl: string; label?: string }) => {
-    setIsGenerating(true);
-    setError("");
-    setQrResult(null);
-
-    try {
-      const response = await fetch("/api/qr/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to generate QR code");
-      }
-
-      const result = await response.json();
-      setQrResult(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -156,13 +128,13 @@ export default function Dashboard() {
       <QrGeneratorForm
         onSubmit={generateQr}
         isLoading={isGenerating}
-        error={error}
+        error={error || ""}
       />
 
       {qrResult && (
         <QrResultDisplay
           result={qrResult}
-          onCreateAnother={() => setQrResult(null)}
+          onCreateAnother={clearResult}
           onCopyUrl={copyToClipboard}
         />
       )}

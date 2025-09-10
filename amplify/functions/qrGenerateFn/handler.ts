@@ -5,9 +5,12 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import QRCode from "qrcode";
 import { ulid } from "ulid";
 
-// Initialize AWS clients
-const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
-const s3Client = new S3Client({});
+// Initialize AWS clients with proper region configuration
+const region = process.env.AWS_REGION || "ap-southeast-2";
+const dynamoClient = DynamoDBDocumentClient.from(
+  new DynamoDBClient({ region })
+);
+const s3Client = new S3Client({ region });
 
 // URL validation and normalization
 function validateAndNormalizeUrl(url: string): string {

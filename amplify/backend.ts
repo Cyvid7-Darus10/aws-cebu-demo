@@ -13,4 +13,13 @@ const backend = defineBackend({
   qrTrackFn,
 });
 
+// Grant the Lambda function access to the storage bucket
+backend.qrGenerateFn.addEnvironment(
+  "AMPLIFY_STORAGE_BUCKET_NAME",
+  backend.storage.resources.bucket.bucketName
+);
+backend.storage.resources.bucket.grantReadWrite(
+  backend.qrGenerateFn.resources.lambda
+);
+
 export default backend;
