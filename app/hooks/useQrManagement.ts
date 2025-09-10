@@ -36,14 +36,26 @@ export const useQrManagement = (): UseQrManagementReturn => {
       // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
 
-      // Call the listUserQrItems Lambda function via GraphQL
-      const result = await client.queries.listUserQrItems({ limit: 100 });
+      // Direct database query
+      const result = await client.models.QrItems.list({
+        limit: 100,
+      });
 
-      if (result.errors || !result.data) {
-        throw new Error("Failed to fetch QR codes");
+      if (result.errors) {
+        throw new Error(
+          result.errors[0]?.message || "Failed to fetch QR codes"
+        );
       }
 
-      const items = JSON.parse(result.data as string) as QrItem[];
+      const items =
+        result.data?.map((item) => ({
+          id: item.id,
+          targetUrl: item.targetUrl,
+          s3Key: item.s3Key,
+          createdAt: item.createdAt,
+          lastScanAt: item.lastScanAt || undefined,
+          scanCount: item.scanCount || 0,
+        })) || [];
 
       // Sort by creation date (newest first)
       items.sort(
@@ -70,17 +82,13 @@ export const useQrManagement = (): UseQrManagementReturn => {
       // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
 
-      // Call the deleteUserQrItem Lambda function via GraphQL
-      const result = await client.mutations.deleteUserQrItem({ id });
+      // Direct database delete
+      const result = await client.models.QrItems.delete({ id });
 
-      if (result.errors || !result.data) {
-        throw new Error("Failed to delete QR code");
-      }
-
-      const deleteResult = JSON.parse(result.data as string);
-
-      if (!deleteResult.success) {
-        throw new Error("Failed to delete QR code");
+      if (result.errors) {
+        throw new Error(
+          result.errors[0]?.message || "Failed to delete QR code"
+        );
       }
 
       // Remove the item from local state

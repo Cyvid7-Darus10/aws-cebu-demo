@@ -29,15 +29,39 @@ export const useQrTracking = (): UseQrTrackingReturn => {
         // Create client inside the function to ensure Amplify is configured
         const client = generateClient<Schema>();
 
-        // Call the trackQr Lambda function via GraphQL
-        const result = await client.queries.trackQr({ qrId: data.qrId });
+        // 1. Get QR item from database
+        const qrItemResult = await client.models.QrItems.get({ id: data.qrId });
 
-        if (result.errors || !result.data) {
+        if (!qrItemResult.data) {
           throw new Error("QR code not found");
         }
 
-        const trackingResult = JSON.parse(result.data as string);
-        return trackingResult.targetUrl;
+        const qrItem = qrItemResult.data;
+        const now = new Date().toISOString();
+
+        // 2. Log the scan
+        await client.models.QrScans.create({
+          qrId: data.qrId,
+          scanAt: now,
+          ua:
+            data.userAgent ||
+            (typeof navigator !== "undefined" ? navigator.userAgent : ""),
+          referer:
+            data.referer ||
+            (typeof document !== "undefined" ? document.referrer : ""),
+          ip: "", // Client-side can't reliably get IP
+          country: "", // Client-side can't get country info
+        });
+
+        // 3. Update QR item counters
+        const currentScanCount = qrItem.scanCount || 0;
+        await client.models.QrItems.update({
+          id: data.qrId,
+          scanCount: currentScanCount + 1,
+          lastScanAt: now,
+        });
+
+        return qrItem.targetUrl;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to track QR scan";
