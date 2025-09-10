@@ -1,15 +1,11 @@
 import type { Schema } from "../../data/resource";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { generateClient } from "aws-amplify/data";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import QRCode from "qrcode";
 import { ulid } from "ulid";
 
 // Initialize AWS clients with proper region configuration
 const region = process.env.AWS_REGION || "ap-southeast-2";
-const dynamoClient = DynamoDBDocumentClient.from(
-  new DynamoDBClient({ region })
-);
 const s3Client = new S3Client({ region });
 
 // URL validation and normalization
@@ -83,33 +79,28 @@ export const handler: Schema["generateQr"]["functionHandler"] = async (
       })
     );
 
-    // Save to DynamoDB - Amplify will handle table names automatically
+    // Use Amplify Data client to save QR item
+    // Configure Amplify for server-side usage
+    const client = generateClient<Schema>({
+      authMode: "iam",
+    });
+
     const now = new Date().toISOString();
 
-    // Use Amplify's data client instead of direct DynamoDB calls
-    // This would be handled by the data layer, but for now we'll use env vars
-    const qrItemsTable = process.env.AMPLIFY_DATA_QRITEMS_TABLE_NAME;
-
-    if (qrItemsTable) {
-      await dynamoClient.send(
-        new PutCommand({
-          TableName: qrItemsTable,
-          Item: {
-            id,
-            targetUrl: normalizedUrl,
-            s3Key,
-            ownerSub:
-              event.identity &&
-              "identity" in event.identity &&
-              "sub" in event.identity
-                ? event.identity.sub
-                : null,
-            createdAt: now,
-            scanCount: 0,
-          },
-        })
-      );
-    }
+    // Create QR item using Amplify Data client
+    await client.models.QrItems.create({
+      id,
+      targetUrl: normalizedUrl,
+      s3Key,
+      ownerSub:
+        event.identity &&
+        "identity" in event.identity &&
+        "sub" in event.identity
+          ? event.identity.sub
+          : null,
+      createdAt: now,
+      scanCount: 0,
+    });
 
     return {
       id,

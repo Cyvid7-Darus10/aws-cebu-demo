@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { Logo } from "../components/atoms";
 import { FeatureCard, LoadingState } from "../components/molecules";
-import { QrGeneratorForm, QrResultDisplay } from "../components/organisms";
+import {
+  QrGeneratorForm,
+  QrResultDisplay,
+  QrManagement,
+} from "../components/organisms";
 import { useQrGeneration } from "../hooks/useQrGeneration";
 
 // Force dynamic rendering
@@ -137,6 +141,11 @@ export default function Dashboard() {
           onCopyUrl={copyToClipboard}
         />
       )}
+
+      {/* QR Management Section */}
+      <div className="mt-12">
+        <QrManagement />
+      </div>
     </main>
   );
 }

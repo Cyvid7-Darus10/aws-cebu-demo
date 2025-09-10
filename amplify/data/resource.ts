@@ -52,6 +52,15 @@ const schema = a.schema({
     .returns(a.json())
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(qrGenerateFn)),
+
+  trackQr: a
+    .query()
+    .arguments({
+      qrId: a.string().required(),
+    })
+    .returns(a.json())
+    .authorization((allow) => [allow.publicApiKey()])
+    .handler(a.handler.function(qrTrackFn)),
 });
 
 export type Schema = ClientSchema<typeof schema>;
