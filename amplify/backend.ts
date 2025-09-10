@@ -27,7 +27,7 @@ backend.storage.resources.bucket.grantReadWrite(
 // Add GraphQL endpoint for Lambda function
 backend.qrGenerateFn.addEnvironment(
   "AMPLIFY_DATA_GRAPHQL_ENDPOINT",
-  backend.data.resources.graphqlApi.graphqlUrl
+  backend.data.resources.graphqlApi.graphqlEndpoint.attrGraphQlUrl
 );
 
 export default backend;
