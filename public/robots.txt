@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard
+
+# Sitemap
+Sitemap: https://main.d2uj1ffub6eiln.amplifyapp.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
