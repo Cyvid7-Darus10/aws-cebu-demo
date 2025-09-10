@@ -28,5 +28,5 @@ export default function HomePage() {
     }
   }, [authStatus, router, mounted]);
 
-  return <LoadingState message="Loading..." showLogo />;
+  return <LoadingState message="Loading..." />;
 }

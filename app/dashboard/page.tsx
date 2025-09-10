@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthenticator } from "@aws-amplify/ui-react";
-import { Logo } from "../components/atoms";
 import { FeatureCard, LoadingState } from "../components/molecules";
 import {
   QrGeneratorForm,
@@ -42,20 +41,13 @@ export default function Dashboard() {
   };
 
   if (!mounted || authStatus !== "authenticated") {
-    return <LoadingState message="Loading dashboard..." showLogo />;
+    return <LoadingState message="Loading dashboard..." />;
   }
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
       {/* Hero Section */}
       <div className="text-center mb-12 animate-in fade-in duration-500">
-        <div className="flex justify-center mb-6">
-          <Logo
-            size="lg"
-            showText={false}
-            className="animate-in zoom-in duration-600"
-          />
-        </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           QR Code Generator
         </h1>

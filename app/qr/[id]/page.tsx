@@ -67,7 +67,7 @@ export default function QrRedirectPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <LoadingState message="Redirecting..." showLogo />
+      <LoadingState message="Redirecting..." />
     </div>
   );
 }

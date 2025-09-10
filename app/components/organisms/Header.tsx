@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { useState } from "react";
-import { Logo, Button } from "../atoms";
+import { Button } from "../atoms";
 import { UserProfile } from "../molecules";
 
 export default function Header() {
@@ -14,7 +14,12 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
       <nav className="flex items-center justify-between max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center gap-8">
-          <Logo animated />
+          <Link
+            href="/dashboard"
+            className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
+          >
+            QR Generator
+          </Link>
           {user && (
             <div className="hidden md:flex items-center gap-6">
               <Link
