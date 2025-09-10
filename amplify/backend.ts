@@ -24,9 +24,4 @@ backend.storage.resources.bucket.grantReadWrite(
   backend.qrGenerateFn.resources.lambda
 );
 
-// Grant the Lambda functions access to the data resources
-backend.data.addDatabaseAccess(backend.qrGenerateFn);
-backend.data.addDatabaseAccess(backend.qrTrackFn);
-backend.data.addDatabaseAccess(backend.qrManageFn);
-
 export default backend;

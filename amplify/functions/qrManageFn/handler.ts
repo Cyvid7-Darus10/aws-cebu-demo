@@ -86,20 +86,8 @@ const deleteQrItem = async (event: AppSyncResolverEvent<{ id: string }>) => {
       throw new Error("Failed to delete QR code");
     }
 
-    // Also delete related scans (optional cleanup)
-    const scansResult = await client.models.QrScans.list({
-      filter: { qrId: { eq: id } },
-    });
-
-    if (scansResult.data) {
-      // Delete scans in batches (Amplify handles this automatically)
-      for (const scan of scansResult.data) {
-        await client.models.QrScans.delete({
-          qrId: scan.qrId,
-          scanAt: scan.scanAt,
-        });
-      }
-    }
+    // Note: Related scans are kept for analytics purposes
+    // They can be cleaned up separately if needed
 
     return {
       success: true,
