@@ -3,13 +3,13 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AmplifyProvider } from "./amplify-provider";
 import Header from "./components/Header";
+import { config, getFullUrl } from "@/lib/config";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "QR Code Generator - Create, Track & Manage QR Codes",
-  description:
-    "Generate QR codes instantly with our powerful QR code generator. Track scans, manage your codes, and get detailed analytics. Perfect for marketing, events, and business use.",
+  title: `${config.app.name} - Create, Track & Manage QR Codes`,
+  description: config.app.description,
   keywords: [
     "QR code generator",
     "QR code",
@@ -27,32 +27,25 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://main.d2uj1ffub6eiln.amplifyapp.com",
-    title: "QR Code Generator - Create, Track & Manage QR Codes",
-    description:
-      "Generate QR codes instantly with our powerful QR code generator. Track scans, manage your codes, and get detailed analytics.",
-    siteName: "QR Code Generator",
+    url: config.baseUrl,
+    title: `${config.app.name} - Create, Track & Manage QR Codes`,
+    description: config.app.description,
+    siteName: config.app.siteName,
     images: [
       {
-        url: "/og-image.jpg",
+        url: getFullUrl("/og-image.png"),
         width: 1200,
         height: 630,
-        alt: "QR Code Generator - Create, Track & Manage QR Codes",
+        alt: `${config.app.name} - Create, Track & Manage QR Codes`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "QR Code Generator - Create, Track & Manage QR Codes",
-    description:
-      "Generate QR codes instantly with our powerful QR code generator. Track scans, manage your codes, and get detailed analytics.",
-    images: ["/og-image.jpg"],
-    creator: "@qrgenerator",
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
+    title: `${config.app.name} - Create, Track & Manage QR Codes`,
+    description: config.app.description,
+    images: [getFullUrl("/og-image.png")],
+    creator: config.social.twitterHandle,
   },
   icons: {
     icon: "/favicon.ico",
@@ -61,16 +54,22 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   alternates: {
-    canonical: "https://main.d2uj1ffub6eiln.amplifyapp.com",
+    canonical: config.baseUrl,
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "QR Code Generator",
-  description: "Generate QR codes instantly with tracking and analytics",
-  url: "https://main.d2uj1ffub6eiln.amplifyapp.com",
+  name: config.app.name,
+  description: config.app.description,
+  url: config.baseUrl,
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web Browser",
   offers: {

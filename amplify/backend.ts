@@ -16,6 +16,13 @@ backend.qrGenerateFn.addEnvironment(
   "AMPLIFY_STORAGE_BUCKET_NAME",
   backend.storage.resources.bucket.bucketName
 );
+
+// Add configurable base URL for QR tracking URLs
+backend.qrGenerateFn.addEnvironment(
+  "BASE_URL",
+  process.env.BASE_URL || "https://your-app-domain.com"
+);
+
 backend.storage.resources.bucket.grantReadWrite(
   backend.qrGenerateFn.resources.lambda
 );
