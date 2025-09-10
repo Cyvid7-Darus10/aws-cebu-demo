@@ -4,8 +4,6 @@ import { useState, useCallback } from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
 
-const client = generateClient<Schema>();
-
 export interface QrTrackingData {
   qrId: string;
   userAgent?: string;
@@ -28,6 +26,9 @@ export const useQrTracking = (): UseQrTrackingReturn => {
       setError(null);
 
       try {
+        // Create client inside the function to ensure Amplify is configured
+        const client = generateClient<Schema>();
+
         // Get QR item from database
         const qrItemResult = await client.models.QrItems.get({ id: data.qrId });
 
