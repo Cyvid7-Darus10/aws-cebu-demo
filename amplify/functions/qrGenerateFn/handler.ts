@@ -1,4 +1,5 @@
 import type { Schema } from "../../data/resource";
+import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/data";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import QRCode from "qrcode";
@@ -7,6 +8,20 @@ import { ulid } from "ulid";
 // Initialize AWS clients with proper region configuration
 const region = process.env.AWS_REGION || "ap-southeast-2";
 const s3Client = new S3Client({ region });
+
+// Configure Amplify for Lambda environment
+const endpoint = process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT;
+if (endpoint) {
+  Amplify.configure({
+    API: {
+      GraphQL: {
+        endpoint,
+        region,
+        defaultAuthMode: "iam" as const,
+      },
+    },
+  });
+}
 
 // URL validation and normalization
 function validateAndNormalizeUrl(url: string): string {
@@ -80,7 +95,6 @@ export const handler: Schema["generateQr"]["functionHandler"] = async (
     );
 
     // Use Amplify Data client to save QR item
-    // Configure Amplify for server-side usage
     const client = generateClient<Schema>({
       authMode: "iam",
     });

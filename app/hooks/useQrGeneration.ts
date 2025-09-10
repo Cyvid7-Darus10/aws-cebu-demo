@@ -36,7 +36,6 @@ export const useQrGeneration = (): UseQrGenerationReturn => {
     setQrResult(null);
 
     try {
-      // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
       const result = await client.queries.generateQr(
         {

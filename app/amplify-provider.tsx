@@ -6,10 +6,14 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
 
+// Configure Amplify immediately when the module loads
+Amplify.configure(outputs);
+
 export function AmplifyProvider({ children }: PropsWithChildren) {
   const [isConfigured, setIsConfigured] = useState(false);
 
   useEffect(() => {
+    // Double-check configuration
     try {
       Amplify.configure(outputs);
       setIsConfigured(true);
