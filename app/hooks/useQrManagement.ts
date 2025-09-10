@@ -36,8 +36,8 @@ export const useQrManagement = (): UseQrManagementReturn => {
       // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
 
-      // Call the listQrItems Lambda function via GraphQL
-      const result = await client.queries.listQrItems({ limit: 100 });
+      // Call the listUserQrItems Lambda function via GraphQL
+      const result = await client.queries.listUserQrItems({ limit: 100 });
 
       if (result.errors || !result.data) {
         throw new Error("Failed to fetch QR codes");
@@ -70,8 +70,8 @@ export const useQrManagement = (): UseQrManagementReturn => {
       // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
 
-      // Call the deleteQrItem Lambda function via GraphQL
-      const result = await client.mutations.deleteQrItem({ id });
+      // Call the deleteUserQrItem Lambda function via GraphQL
+      const result = await client.mutations.deleteUserQrItem({ id });
 
       if (result.errors || !result.data) {
         throw new Error("Failed to delete QR code");

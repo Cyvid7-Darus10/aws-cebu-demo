@@ -63,7 +63,7 @@ const schema = a.schema({
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(qrTrackFn)),
 
-  listQrItems: a
+  listUserQrItems: a
     .query()
     .arguments({
       limit: a.integer(),
@@ -72,7 +72,7 @@ const schema = a.schema({
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(qrManageFn)),
 
-  deleteQrItem: a
+  deleteUserQrItem: a
     .mutation()
     .arguments({
       id: a.string().required(),

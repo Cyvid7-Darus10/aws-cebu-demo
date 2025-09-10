@@ -5,9 +5,9 @@ import type { AppSyncResolverEvent } from "aws-lambda";
 export const handler = async (event: AppSyncResolverEvent<unknown>) => {
   const fieldName = event.info?.fieldName;
 
-  if (fieldName === "listQrItems") {
+  if (fieldName === "listUserQrItems") {
     return listQrItems(event as AppSyncResolverEvent<{ limit?: number }>);
-  } else if (fieldName === "deleteQrItem") {
+  } else if (fieldName === "deleteUserQrItem") {
     return deleteQrItem(event as AppSyncResolverEvent<{ id: string }>);
   }
 
