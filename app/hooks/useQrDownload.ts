@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { generateClient } from "aws-amplify/data";
+import { getUrl } from "aws-amplify/storage";
+import type { Schema } from "@/amplify/data/resource";
 
 export interface UseQrDownloadReturn {
   downloadQr: (qrId: string, filename?: string) => Promise<void>;
@@ -18,34 +21,45 @@ export const useQrDownload = (): UseQrDownloadReturn => {
     setError(null);
 
     try {
-      // Fetch QR image from download API
-      const response = await fetch(`/api/qr/download/${qrId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+      // Get QR item from database to get S3 key
+      const client = generateClient<Schema>();
+      const result = await client.models.QrItems.get({ id: qrId });
+
+      if (!result.data) {
+        throw new Error("QR code not found");
+      }
+
+      const qrItem = result.data;
+
+      // Get signed URL from S3
+      const imageUrl = await getUrl({
+        path: qrItem.s3Key,
+        options: {
+          validateObjectExistence: true,
+          expiresIn: 300, // 5 minutes
         },
       });
 
+      // Fetch the image from S3
+      const response = await fetch(imageUrl.url.toString());
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to download QR image");
+        throw new Error(
+          `Failed to fetch image: ${response.status} ${response.statusText}`
+        );
       }
 
       // Get the image blob
       const blob = await response.blob();
 
-      // Get filename from Content-Disposition header or use provided/default
+      // Create filename with sanitized target URL
       let downloadFilename = filename;
       if (!downloadFilename) {
-        const contentDisposition = response.headers.get("Content-Disposition");
-        if (contentDisposition) {
-          const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
-          downloadFilename = filenameMatch
-            ? filenameMatch[1]
-            : `qr_${qrId}.png`;
-        } else {
-          downloadFilename = `qr_${qrId}.png`;
-        }
+        const sanitizedUrl = qrItem.targetUrl
+          .replace(/https?:\/\//, "")
+          .replace(/[^a-zA-Z0-9.-]/g, "_")
+          .substring(0, 50);
+        downloadFilename = `qr_${sanitizedUrl}_${qrId}.png`;
       }
 
       // Create download link and trigger download
