@@ -20,7 +20,7 @@ backend.qrGenerateFn.addEnvironment(
 // Add configurable base URL for QR tracking URLs
 backend.qrGenerateFn.addEnvironment(
   "BASE_URL",
-  process.env.BASE_URL || "https://your-app-domain.com"
+  process.env.BASE_URL || "https://main.d2uj1ffub6eiln.amplifyapp.com"
 );
 
 backend.storage.resources.bucket.grantReadWrite(
