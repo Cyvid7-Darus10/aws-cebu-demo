@@ -6,7 +6,6 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 import { Logo } from "../components/atoms";
 import { FeatureCard, LoadingState } from "../components/molecules";
 import { QrGeneratorForm, QrResultDisplay } from "../components/organisms";
-import type { QrResult } from "../components/organisms";
 import { useQrGeneration } from "../hooks/useQrGeneration";
 
 // Force dynamic rendering

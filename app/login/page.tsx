@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
-import { Logo, Card } from "../components/atoms";
+// Unused imports removed - Logo and Card are not used in this component
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";

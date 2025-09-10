@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Card } from "../atoms";
+import Image from "next/image";
+import { Button } from "../atoms";
 
 export interface QrCodeDisplayProps {
   qrId: string;
@@ -16,10 +17,13 @@ const QrCodeDisplay: React.FC<QrCodeDisplayProps> = ({
     <div className={`text-center ${className}`}>
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Your QR Code</h3>
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-2xl p-8 mb-6 group hover:border-blue-300 transition-colors">
-        <img
+        <Image
           src={`/qr/img/${qrId}`}
           alt="Generated QR Code"
-          className="w-48 h-48 mx-auto rounded-lg shadow-lg group-hover:scale-105 transition-transform"
+          width={192}
+          height={192}
+          className="mx-auto rounded-lg shadow-lg group-hover:scale-105 transition-transform"
+          unoptimized // QR codes are already optimized and external
         />
       </div>
       {onCopyImageUrl && (
