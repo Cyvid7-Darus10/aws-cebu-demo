@@ -36,25 +36,14 @@ export const useQrManagement = (): UseQrManagementReturn => {
       // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
 
-      const result = await client.models.QrItems.list({
-        limit: 100, // Adjust as needed
-      });
+      // Call the listQrItems Lambda function via GraphQL
+      const result = await client.queries.listQrItems({ limit: 100 });
 
-      if (result.errors) {
-        throw new Error(
-          result.errors[0]?.message || "Failed to fetch QR codes"
-        );
+      if (result.errors || !result.data) {
+        throw new Error("Failed to fetch QR codes");
       }
 
-      const items =
-        result.data?.map((item) => ({
-          id: item.id,
-          targetUrl: item.targetUrl,
-          s3Key: item.s3Key,
-          createdAt: item.createdAt,
-          lastScanAt: item.lastScanAt || undefined,
-          scanCount: item.scanCount || 0,
-        })) || [];
+      const items = JSON.parse(result.data as string) as QrItem[];
 
       // Sort by creation date (newest first)
       items.sort(
@@ -81,19 +70,21 @@ export const useQrManagement = (): UseQrManagementReturn => {
       // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
 
-      const result = await client.models.QrItems.delete({ id });
+      // Call the deleteQrItem Lambda function via GraphQL
+      const result = await client.mutations.deleteQrItem({ id });
 
-      if (result.errors) {
-        throw new Error(
-          result.errors[0]?.message || "Failed to delete QR code"
-        );
+      if (result.errors || !result.data) {
+        throw new Error("Failed to delete QR code");
+      }
+
+      const deleteResult = JSON.parse(result.data as string);
+
+      if (!deleteResult.success) {
+        throw new Error("Failed to delete QR code");
       }
 
       // Remove the item from local state
       setQrItems((prev) => prev.filter((item) => item.id !== id));
-
-      // TODO: Also delete the S3 image if needed
-      // This would require additional logic to delete from S3
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to delete QR code";

@@ -1,6 +1,7 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 import { qrGenerateFn } from "../functions/qrGenerateFn/resource";
 import { qrTrackFn } from "../functions/qrTrackFn/resource";
+import { qrManageFn } from "../functions/qrManageFn/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -61,6 +62,24 @@ const schema = a.schema({
     .returns(a.json())
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(qrTrackFn)),
+
+  listQrItems: a
+    .query()
+    .arguments({
+      limit: a.integer(),
+    })
+    .returns(a.json())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(qrManageFn)),
+
+  deleteQrItem: a
+    .mutation()
+    .arguments({
+      id: a.string().required(),
+    })
+    .returns(a.json())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(qrManageFn)),
 });
 
 export type Schema = ClientSchema<typeof schema>;
