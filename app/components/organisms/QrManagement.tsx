@@ -4,6 +4,7 @@ import React from "react";
 import { useQrManagement } from "../../hooks/useQrManagement";
 import { Card, Button } from "../atoms";
 import { LoadingState, ErrorAlert } from "../molecules";
+import { useQrDownload } from "../../hooks/useQrDownload";
 
 export interface QrManagementProps {
   className?: string;
@@ -12,6 +13,7 @@ export interface QrManagementProps {
 const QrManagement: React.FC<QrManagementProps> = ({ className = "" }) => {
   const { qrItems, isLoading, error, fetchQrItems, deleteQrItem, isDeleting } =
     useQrManagement();
+  const { downloadQr, isDownloading } = useQrDownload();
 
   if (isLoading && qrItems.length === 0) {
     return <LoadingState message="Loading your QR codes..." />;
@@ -86,7 +88,7 @@ const QrManagement: React.FC<QrManagementProps> = ({ className = "" }) => {
                     )}
                   </div>
 
-                  <div className="mt-2 flex gap-2">
+                  <div className="mt-2 flex gap-2 flex-wrap">
                     <a
                       href={`/qr/${item.id}`}
                       target="_blank"
@@ -104,6 +106,13 @@ const QrManagement: React.FC<QrManagementProps> = ({ className = "" }) => {
                       className="text-gray-600 hover:text-gray-700 text-sm font-medium"
                     >
                       Copy URL
+                    </button>
+                    <button
+                      onClick={() => downloadQr(item.id)}
+                      disabled={isDownloading}
+                      className="text-green-600 hover:text-green-700 text-sm font-medium disabled:opacity-50"
+                    >
+                      {isDownloading ? "Downloading..." : "Download"}
                     </button>
                   </div>
                 </div>

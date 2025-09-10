@@ -13,7 +13,8 @@ const schema = a.schema({
       lastScanAt: a.datetime(),
       scanCount: a.integer().default(0),
     })
-    .authorization((allow) => [allow.publicApiKey(), allow.owner()]),
+    .authorization((allow) => [allow.publicApiKey(), allow.owner()])
+    .secondaryIndexes((index) => [index("targetUrl").name("byTargetUrl")]),
 
   QrScans: a
     .model({

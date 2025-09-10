@@ -39,15 +39,37 @@ export const useQrGeneration = (): UseQrGenerationReturn => {
     try {
       const client = generateClient<Schema>();
 
-      // Generate unique ID
-      const id = ulid();
-      const now = new Date().toISOString();
-
       // Validate and normalize URL
       let normalizedUrl = data.targetUrl;
       if (!normalizedUrl.match(/^https?:\/\//i)) {
         normalizedUrl = `https://${normalizedUrl}`;
       }
+
+      // Check if QR code already exists for this URL
+      const existingQrResult = await client.models.QrItems.list({
+        filter: {
+          targetUrl: { eq: normalizedUrl },
+        },
+        limit: 1,
+      });
+
+      if (existingQrResult.data && existingQrResult.data.length > 0) {
+        const existingQr = existingQrResult.data[0];
+
+        // Return existing QR instead of creating a new one
+        setQrResult({
+          id: existingQr.id,
+          targetUrl: existingQr.targetUrl,
+          qrImageS3Key: existingQr.s3Key,
+          trackingUrl: `${window.location.origin}/qr/${existingQr.id}`,
+        });
+
+        return;
+      }
+
+      // Generate unique ID for new QR
+      const id = ulid();
+      const now = new Date().toISOString();
 
       // 1. Create QR item in database first
       const qrItem = await client.models.QrItems.create({
