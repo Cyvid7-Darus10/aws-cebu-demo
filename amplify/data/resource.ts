@@ -2,7 +2,6 @@ import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 import { qrGenerateFn } from "../functions/qrGenerateFn/resource";
 
 const schema = a.schema({
-  // QR code models
   QrItems: a
     .model({
       id: a.id().required(),

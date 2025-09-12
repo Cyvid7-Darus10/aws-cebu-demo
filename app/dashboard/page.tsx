@@ -11,7 +11,6 @@ import {
 } from "../components/organisms";
 import { useQrGeneration } from "../hooks/useQrGeneration";
 
-// Force dynamic rendering
 export const dynamic = "force-dynamic";
 
 export default function Dashboard() {
@@ -25,7 +24,6 @@ export default function Dashboard() {
     setMounted(true);
   }, []);
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (mounted && authStatus === "unauthenticated") {
       router.replace("/login");
@@ -46,7 +44,6 @@ export default function Dashboard() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      {/* Hero Section */}
       <div className="text-center mb-12 animate-in fade-in duration-500">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           QR Code Generator
@@ -56,7 +53,6 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 animate-in slide-in-from-bottom duration-500 delay-200">
         <FeatureCard
           icon={
@@ -134,7 +130,6 @@ export default function Dashboard() {
         />
       )}
 
-      {/* QR Management Section */}
       <div className="mt-12">
         <QrManagement />
       </div>

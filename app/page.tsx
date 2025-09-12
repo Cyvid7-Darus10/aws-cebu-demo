@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { LoadingState } from "./components/molecules";
 
-// Force dynamic rendering
 export const dynamic = "force-dynamic";
 
 export default function HomePage() {
