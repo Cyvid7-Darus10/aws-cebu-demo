@@ -53,12 +53,7 @@ const QrResultDisplay: React.FC<QrResultDisplayProps> = ({
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* QR Code Display */}
-        <QrCodeDisplay
-          qrId={result.id}
-          onCopyImageUrl={() =>
-            onCopyUrl(`${window.location.origin}/qr/img/${result.id}`)
-          }
-        />
+        <QrCodeDisplay qrId={result.id} />
 
         {/* Details */}
         <div className="space-y-6">
