@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { getUrl } from "aws-amplify/storage";
+import { generateClient } from "aws-amplify/data";
+import type { Schema } from "@/amplify/data/resource";
 
 export interface UseQrImageReturn {
   imageUrl: string | null;
@@ -25,13 +27,26 @@ export const useQrImage = (qrId: string): UseQrImageReturn => {
         setIsLoading(true);
         setError(null);
 
-        // Generate signed URL for the QR image
-        const s3Key = `qr-images/${qrId}.png`;
+        // Get QR item from database to retrieve the correct S3 key
+        const client = generateClient<Schema>();
+        const qrItemResult = await client.models.QrItems.get({ id: qrId });
 
+        if (!qrItemResult.data) {
+          throw new Error("QR code not found");
+        }
+
+        const qrItem = qrItemResult.data;
+
+        if (!qrItem.s3Key) {
+          throw new Error("QR image not available");
+        }
+
+        // Generate signed URL using the actual S3 key from database
         const result = await getUrl({
-          path: s3Key,
+          path: qrItem.s3Key,
           options: {
             expiresIn: 3600, // 1 hour
+            validateObjectExistence: true,
           },
         });
 
