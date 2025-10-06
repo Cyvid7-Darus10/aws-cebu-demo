@@ -36,9 +36,10 @@ export const useQrManagement = (): UseQrManagementReturn => {
       // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
 
-      // Direct database query
+      // Query QR items for the authenticated user only
       const result = await client.models.QrItems.list({
         limit: 100,
+        authMode: "userPool", // Use user pool authentication to filter by owner
       });
 
       if (result.errors) {
@@ -82,8 +83,15 @@ export const useQrManagement = (): UseQrManagementReturn => {
       // Create client inside the function to ensure Amplify is configured
       const client = generateClient<Schema>();
 
-      // Direct database delete
-      const result = await client.models.QrItems.delete({ id });
+      // Delete QR item (only owner can delete due to authorization rules)
+      const result = await client.models.QrItems.delete(
+        {
+          id,
+        },
+        {
+          authMode: "userPool", // Use user pool authentication for owner-based deletion
+        }
+      );
 
       if (result.errors) {
         throw new Error(

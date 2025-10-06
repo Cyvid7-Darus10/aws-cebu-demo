@@ -45,12 +45,13 @@ export const useQrGeneration = (): UseQrGenerationReturn => {
         normalizedUrl = `https://${normalizedUrl}`;
       }
 
-      // Check if QR code already exists for this URL
+      // Check if QR code already exists for this URL for the current user
       const existingQrResult = await client.models.QrItems.list({
         filter: {
           targetUrl: { eq: normalizedUrl },
         },
         limit: 1,
+        authMode: "userPool", // Use user pool authentication to filter by owner
       });
 
       if (existingQrResult.data && existingQrResult.data.length > 0) {
@@ -72,13 +73,18 @@ export const useQrGeneration = (): UseQrGenerationReturn => {
       const now = new Date().toISOString();
 
       // 1. Create QR item in database first
-      const qrItem = await client.models.QrItems.create({
-        id,
-        targetUrl: normalizedUrl,
-        s3Key: "", // Will be updated after S3 upload
-        createdAt: now,
-        scanCount: 0,
-      });
+      const qrItem = await client.models.QrItems.create(
+        {
+          id,
+          targetUrl: normalizedUrl,
+          s3Key: "", // Will be updated after S3 upload
+          createdAt: now,
+          scanCount: 0,
+        },
+        {
+          authMode: "userPool", // Use user pool authentication to set owner
+        }
+      );
 
       if (!qrItem.data) {
         throw new Error("Failed to create QR item in database");
@@ -109,10 +115,15 @@ export const useQrGeneration = (): UseQrGenerationReturn => {
       const uploadData = JSON.parse(uploadResult.data as string);
 
       // 3. Update QR item with S3 key
-      await client.models.QrItems.update({
-        id,
-        s3Key: uploadData.s3Key,
-      });
+      await client.models.QrItems.update(
+        {
+          id,
+          s3Key: uploadData.s3Key,
+        },
+        {
+          authMode: "userPool", // Use user pool authentication for owner-based update
+        }
+      );
 
       setQrResult({
         id,
