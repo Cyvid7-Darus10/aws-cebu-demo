@@ -1,44 +1,22 @@
 # QR Code Generator with AWS Amplify
 
-A modern, full-stack QR code generator built with Next.js 14, AWS Amplify Gen2, and TypeScript. Generate, track, and manage QR codes with real-time analytics and cloud storage.
+A full-stack QR code generator built with Next.js 14, AWS Amplify Gen2, and TypeScript. You generate a QR code, it gets stored in S3, and every scan is tracked and counted.
 
-## ✨ Features
+I built this as the demo for an AWS User Group Cebu talk, so the code leans toward showing how the Amplify Gen2 pieces fit together rather than being the smallest possible implementation.
 
-### 🚀 Core Functionality
+## What it does
 
-- **QR Code Generation**: Create QR codes instantly with client-side generation
-- **Cloud Storage**: Automatic S3 upload for persistent QR code images
-- **Real-time Tracking**: Track scans with detailed analytics (user agent, referrer, timestamps)
-- **QR Management**: View, organize, and delete your QR codes from a dashboard
-- **Responsive Design**: Mobile-first UI with Tailwind CSS
+QR codes are generated client-side and uploaded to S3, so the image persists and can be shared. Each code redirects through a tracking route that records the scan (timestamp, user agent, referrer) before forwarding the visitor to the target URL. A dashboard lists your codes with their scan counts and lets you delete them.
 
-### 🔧 Technical Features
+Users sign in through Amazon Cognito, and authorization rules mean you only ever see your own codes.
 
-- **Authentication**: Secure user authentication with Amazon Cognito
-- **GraphQL API**: Type-safe API with AWS AppSync
-- **Real-time Database**: Amazon DynamoDB with Amplify Data client
-- **Serverless Functions**: AWS Lambda for S3 operations
-- **PWA Ready**: Progressive Web App capabilities with manifest and service worker support
-- **SEO Optimized**: Complete metadata, Open Graph, and structured data
+## Architecture
 
-## 🏗️ Architecture
+The frontend is Next.js 14 on the App Router, with TypeScript and Tailwind. QR logic lives in custom hooks rather than in components, which keeps the pages thin.
 
-### Frontend (Next.js 14)
+The backend is Amplify Gen2: Cognito for auth, AppSync for the GraphQL API, DynamoDB for storage, S3 for the images, and a Lambda function for the S3 upload.
 
-- **App Router**: Modern Next.js with server and client components
-- **React Hooks**: Custom hooks for QR generation, tracking, and management
-- **TypeScript**: Full type safety across the application
-- **Tailwind CSS**: Utility-first styling with responsive design
-
-### Backend (AWS Amplify Gen2)
-
-- **Authentication**: Amazon Cognito User Pools
-- **API**: AWS AppSync GraphQL API
-- **Database**: Amazon DynamoDB with real-time capabilities
-- **Storage**: Amazon S3 for QR code images
-- **Functions**: AWS Lambda for server-side operations
-
-### Data Models
+### Data models
 
 ```graphql
 # QR Items - Store QR code metadata
@@ -63,53 +41,42 @@ QrScans {
 }
 ```
 
-## 🚀 Quick Start
+## Running it
 
-### Prerequisites
-
-- Node.js 18+ and npm
-- AWS Account with appropriate permissions
-- AWS CLI configured (optional but recommended)
-
-### 1. Clone and Install
+You'll need Node.js 18+ and an AWS account. Having the AWS CLI configured makes the deploy step easier but isn't strictly required.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Cyvid7-Darus10/aws-cebu-demo.git
 cd aws-cebu-demo
 npm install
 ```
 
-### 2. Environment Setup
+Copy the environment template and fill it in:
 
 ```bash
-# Copy environment template
 cp env.example .env.local
+```
 
-# Edit .env.local with your values
+```bash
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 NEXT_PUBLIC_APP_NAME="QR Code Generator"
 NEXT_PUBLIC_APP_DESCRIPTION="Generate and track QR codes with AWS Amplify"
 ```
 
-### 3. Deploy Backend
+Deploy the backend into a sandbox, then start the dev server:
 
 ```bash
-# Install Amplify CLI if needed
 npm install -g @aws-amplify/cli
-
-# Deploy to AWS
 npx ampx sandbox
 ```
-
-### 4. Run Development Server
 
 ```bash
 npm run dev
 ```
 
-Visit `http://localhost:3000` to see your application.
+The app runs at http://localhost:3000.
 
-## 📁 Project Structure
+## Project structure
 
 ```
 aws-cebu-demo/
@@ -139,13 +106,9 @@ aws-cebu-demo/
     └── manifest files       # PWA & SEO assets
 ```
 
-## 🎯 Key Components
+## The hooks
 
-### Custom Hooks
-
-#### `useQrGeneration`
-
-Handles QR code creation with database operations and S3 upload:
+`useQrGeneration` creates the record, generates the image, and uploads it:
 
 ```typescript
 const { generateQr, isGenerating, qrResult, error } = useQrGeneration();
@@ -156,9 +119,7 @@ await generateQr({
 });
 ```
 
-#### `useQrTracking`
-
-Manages QR scan tracking and redirection:
+`useQrTracking` records a scan and hands back the destination to redirect to:
 
 ```typescript
 const { trackAndRedirect, isTracking } = useQrTracking();
@@ -170,9 +131,7 @@ const targetUrl = await trackAndRedirect({
 });
 ```
 
-#### `useQrManagement`
-
-Provides QR code CRUD operations:
+`useQrManagement` covers listing and deleting:
 
 ```typescript
 const { qrItems, loading, deleteQr } = useQrManagement();
@@ -186,21 +145,11 @@ useEffect(() => {
 await deleteQr("qr-id");
 ```
 
-### Lambda Functions
+On the backend, `qrGenerateFn` builds the QR image from the tracking URL, uploads it to S3 with caching headers, and returns the S3 key along with the tracking URL.
 
-#### `qrGenerateFn`
+## Configuration
 
-Handles S3 upload for QR code images:
-
-- Generates QR code image from tracking URL
-- Uploads to S3 with optimized caching headers
-- Returns S3 key and tracking URL
-
-## 🔧 Configuration
-
-### Environment Variables
-
-#### Client-side (NEXT*PUBLIC*\*)
+Client-side variables:
 
 ```bash
 NEXT_PUBLIC_BASE_URL=https://your-domain.com
@@ -209,15 +158,9 @@ NEXT_PUBLIC_APP_DESCRIPTION="Your app description"
 NEXT_PUBLIC_TWITTER_HANDLE=@yourhandle
 ```
 
-#### Server-side (Lambda)
+The Lambda needs `BASE_URL` set to the same domain, since that's what the tracking URLs are built from.
 
-```bash
-BASE_URL=https://your-domain.com  # Used for QR tracking URLs
-```
-
-### Amplify Configuration
-
-The `lib/config.ts` file centralizes all configuration:
+Everything is read through `lib/config.ts` rather than scattered `process.env` calls:
 
 ```typescript
 export const config = {
@@ -230,95 +173,25 @@ export const config = {
 };
 ```
 
-## 🚀 Deployment
+To rebrand it, change `lib/config.ts` and swap the PWA icons, Apple touch icon, and Open Graph image in `/public/`.
 
-### Production Deployment
+## Deploying
 
-1. **Set Environment Variables**
-
-   ```bash
-   # In your deployment platform (Amplify Console, Vercel, etc.)
-   NEXT_PUBLIC_BASE_URL=https://your-production-domain.com
-   BASE_URL=https://your-production-domain.com
-   ```
-
-2. **Deploy Backend**
-
-   ```bash
-   npx ampx pipeline-deploy --branch main --app-id <your-app-id>
-   ```
-
-3. **Build and Deploy Frontend**
-   ```bash
-   npm run build
-   npm start
-   ```
-
-### Amplify Hosting
-
-For seamless deployment with Amplify Hosting:
+Set `NEXT_PUBLIC_BASE_URL` and `BASE_URL` to your production domain in whatever platform you're deploying from, then:
 
 ```bash
-# Connect your repository
-amplify add hosting
-
-# Deploy
-amplify publish
+npx ampx pipeline-deploy --branch main --app-id <your-app-id>
+npm run build
+npm start
 ```
 
-## 🛡️ Security
+If you'd rather use Amplify Hosting, `amplify add hosting` followed by `amplify publish` will do it.
 
-### Authentication
+## Security
 
-- **Cognito User Pools**: Secure user authentication
-- **JWT Tokens**: Automatic token management
-- **Authorization Rules**: GraphQL field-level security
+Authentication runs through Cognito User Pools with automatic JWT handling. The GraphQL schema uses owner-based authorization, so a user's queries only ever return their own QR codes. The API accepts both API key and user pool auth depending on the operation, since the public scan route has to work for visitors who aren't signed in. S3 images are served through signed URLs.
 
-### Data Protection
-
-- **Owner-based Access**: Users can only access their QR codes
-- **API Key + User Pool**: Dual authentication modes
-- **S3 Security**: Signed URLs for secure image access
-
-## 📊 Analytics & Monitoring
-
-### Built-in Analytics
-
-- **Scan Tracking**: Timestamp, user agent, referrer
-- **Usage Statistics**: Scan counts per QR code
-- **User Metrics**: QR codes per user
-
-### Optional Integrations
-
-Add to `lib/config.ts`:
-
-```typescript
-analytics: {
-  googleAnalyticsId: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
-  hotjarId: process.env.NEXT_PUBLIC_HOTJAR_ID,
-}
-```
-
-## 🎨 Customization
-
-### Styling
-
-- **Tailwind CSS**: Utility-first styling
-- **Component Library**: Atomic design system
-- **Responsive**: Mobile-first approach
-
-### Branding
-
-Update `lib/config.ts` and replace assets in `/public/`:
-
-- `icon-192x192.png` - PWA icon
-- `icon-512x512.png` - PWA icon
-- `apple-touch-icon.png` - iOS icon
-- `og-image.png` - Social sharing image
-
-## 🧪 Development
-
-### Available Scripts
+## Scripts
 
 ```bash
 npm run dev          # Start development server
@@ -328,66 +201,28 @@ npm run lint         # Run ESLint
 npm run type-check   # Run TypeScript checks
 ```
 
-### Code Quality
+## Troubleshooting
 
-- **ESLint**: Code linting with Next.js rules
-- **TypeScript**: Full type safety
-- **Prettier**: Code formatting (can be added)
+If you hit an Amplify configuration error, check that `Amplify.configure()` runs before `generateClient()`. This is the most common one.
 
-## 🐛 Troubleshooting
+S3 upload failures are almost always Lambda permissions or a missing `AMPLIFY_STORAGE_BUCKET_NAME`.
 
-### Common Issues
+GraphQL authorization errors usually mean the auth state hasn't resolved yet, or the authorization rule on the model doesn't match what the query is asking for.
 
-1. **Amplify Configuration Error**
-
-   ```
-   Solution: Ensure Amplify.configure() is called before generateClient()
-   ```
-
-2. **S3 Upload Failures**
-
-   ```
-   Solution: Check Lambda permissions and AMPLIFY_STORAGE_BUCKET_NAME
-   ```
-
-3. **GraphQL Authorization Errors**
-   ```
-   Solution: Verify authentication state and authorization rules
-   ```
-
-### Debug Mode
-
-Enable detailed logging:
+For more detail on any of these:
 
 ```bash
 NEXT_PUBLIC_DEBUG=true npm run dev
 ```
 
-## 📚 Resources
+## Resources
 
 - [AWS Amplify Documentation](https://docs.amplify.aws/)
 - [Next.js Documentation](https://nextjs.org/docs)
-- [GraphQL Best Practices](https://graphql.org/learn/best-practices/)
 - [AWS Lambda Functions](https://docs.aws.amazon.com/lambda/)
 
-## 🤝 Contributing
+## License
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+MIT-0. See [LICENSE](./LICENSE).
 
-## 📄 License
-
-This project is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-- **Issues**: GitHub Issues for bug reports
-- **Discussions**: GitHub Discussions for questions
-- **AWS Support**: AWS Support for infrastructure issues
-
----
-
-Built with ❤️ using AWS Amplify, Next.js, and TypeScript
+Built by [Cyrus Pastelero](https://github.com/Cyvid7-Darus10).
